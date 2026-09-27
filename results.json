@@ -1,0 +1,107 @@
+{
+  "calibrated": {
+    "mu": 1.7069,
+    "lift_area": 6.5233,
+    "power_w": 455071.4191,
+    "drag_area": 0.9204,
+    "brake_limit_g": 3.0133
+  },
+  "lateral_fit_r_squared": 0.938,
+  "lateral_fit_loo_error_pct": 11.3,
+  "corners_fitted": 7,
+  "corners_excluded_flat_out": 1,
+  "power_fit_r_squared": 0.342,
+  "brake_peaks_g": [
+    3.24,
+    3.2,
+    2.79,
+    4.27,
+    2.89,
+    3.13,
+    2.16,
+    2.59,
+    2.01,
+    3.32
+  ],
+  "sim_lap_s": 84.873,
+  "pole_s": 88.111,
+  "top10_median_profile_lap_s": 88.65,
+  "speed_mean_abs_error_kmh": 16.7,
+  "sim_top_speed_kmh": 331.6,
+  "real_top_speed_kmh": 322.0,
+  "sim_vs_pole_pct": -3.68,
+  "development_stages": {
+    "Published power & downforce": {
+      "lap_s": 88.682,
+      "apex_error_kmh": 28.9
+    },
+    "+ grip & downforce fitted to corners": {
+      "lap_s": 81.051,
+      "apex_error_kmh": 14.4
+    },
+    "+ power, drag & braking fitted to telemetry": {
+      "lap_s": 83.515,
+      "apex_error_kmh": 15.0
+    },
+    "+ combined grip (friction circle)": {
+      "lap_s": 84.873,
+      "apex_error_kmh": 14.9
+    }
+  },
+  "own_line_lap_times": {
+    "ANT": 85.632,
+    "LEC": 85.003,
+    "HAM": 86.65,
+    "RUS": 86.57,
+    "HAD": 85.431,
+    "NOR": 87.506,
+    "VER": 85.158,
+    "PIA": 85.817,
+    "LAW": 85.858,
+    "LIN": 88.466,
+    "BOR": 87.199,
+    "HUL": 86.416,
+    "GAS": 86.116,
+    "BEA": 87.139,
+    "SAI": 86.967,
+    "ALB": 87.672,
+    "OCO": 87.081,
+    "BOT": 87.856,
+    "COL": 86.379,
+    "PER": 87.442,
+    "STR": 86.669,
+    "ALO": 86.804
+  },
+  "own_line_spread_s": 3.462,
+  "bootstrap_mean_s": 85.574,
+  "bootstrap_95_interval_s": [
+    84.832,
+    86.781
+  ],
+  "sensitivity_10pct": {
+    "Braking limit": {
+      "minus_10pct_s": 0.183,
+      "plus_10pct_s": -0.131
+    },
+    "Drag": {
+      "minus_10pct_s": -0.844,
+      "plus_10pct_s": 0.845
+    },
+    "Downforce": {
+      "minus_10pct_s": 1.56,
+      "plus_10pct_s": -1.742
+    },
+    "Power": {
+      "minus_10pct_s": 1.837,
+      "plus_10pct_s": -1.607
+    },
+    "Mass": {
+      "minus_10pct_s": -2.777,
+      "plus_10pct_s": 2.312
+    },
+    "Tyre grip": {
+      "minus_10pct_s": 3.25,
+      "plus_10pct_s": -3.023
+    }
+  }
+}
