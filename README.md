@@ -6,6 +6,10 @@ telemetry for all 22 drivers. The most useful result isn't the lap time
 itself: it's what the calibration revealed about the 2026 cars, and why a
 model that matches the real lap time can still be wrong.
 
+Part 2 adds the 2026 power unit (battery deployment, harvesting and
+superclipping under the qualifying energy rules) and finds the fastest legal
+way to spend the energy.
+
 ![Simulated lap of Silverstone](charts/1_track_map.png)
 
 ## How it works
@@ -85,9 +89,8 @@ km/h** before reaching the braking zone. That's the battery running out.
 The simulation is 3.7% faster than pole. A point-mass simulator describes a
 driver who uses every bit of grip perfectly, with no weight transfer, tyre
 temperature effects or time spent changing direction, so it should come out
-quicker than reality. The biggest single gap is on the straights, where the
-model gives the car constant power but the real cars run out of battery
-energy.
+quicker than reality. Part 2 below shows where the gap actually sits: mostly
+in the corners, not on the straights as first assumed.
 
 The bootstrap interval comes from rebuilding the consensus line 30 times
 from random samples of drivers, showing how much the answer depends on
@@ -120,11 +123,78 @@ A 10% change in each parameter, one at a time. Tyre grip matters most (about
 result works out at roughly 0.33 s per 10 kg, in line with the commonly
 quoted F1 rule of thumb of around 0.3 s per 10 kg per lap.
 
+## Part 2: 2026 energy deployment
+
+The model above gives the car a constant average power. Real 2026 cars
+don't work like that, so Part 2 adds the power unit as the rules define it
+(as amended before the Miami GP, so in force at Silverstone):
+
+- A petrol engine of about 400 kW, plus an electric motor of up to 350 kW
+- The motor can push the car (deploying battery energy) or charge the
+  battery. That includes **superclipping**: recharging at full throttle, so
+  the car slows down with the pedal flat
+- Energy is also harvested under braking, at up to 350 kW
+- In qualifying, harvesting is capped at **7 MJ per lap**, and the battery
+  can't deploy more than it has harvested
+
+The strategy is set by two speeds: deploy the motor below one, superclip
+above the other. Superclipping carries on until the next corner, as the
+telemetry shows real cars doing. The simulation searches 1,800 strategies
+for the fastest legal lap (core loops compiled with Numba: about 4 seconds
+per search). Drag was refitted for this model, to 1.0 m², by matching real
+straight-line speeds: the earlier 0.92 had been absorbing the missing
+energy limits.
+
+![Energy trace](charts/9_energy_speed_trace.png)
+
+**Best strategy: deploy below 270 km/h, superclip above 305 km/h.** That
+harvests 4.2 MJ under braking and 2.4 MJ from clipping, and deploys 6.4 MJ.
+Deploying at low speed makes sense because a joule spent there buys more
+time: the car spends longer covering each metre.
+
+The model now reproduces the real behaviour on the straights. On the first
+straight it goes from 305 to 271 km/h at full throttle, against a real 313
+to 269, and the straight-line speed error drops from 22 to 17 km/h.
+
+![Strategy map](charts/10_strategy_map.png)
+
+### What energy is worth
+
+![Energy value](charts/11_energy_value.png)
+
+- **The energy rules cost about 7 seconds a lap.** With unlimited
+  deployment the lap would be 77.9 s, against 84.9 s under the rules
+- **Battery energy is worth about 0.55 s per MJ**: letting the battery run
+  down 1 MJ over the lap saves 0.56 s, and 2 MJ saves 1.10 s
+- **A tighter 6 MJ harvest limit costs 0.45 s, but raising it to 8 MJ gains
+  nothing.** The best strategy only harvests 6.6 MJ: clipping harder for more
+  energy costs more time on the straights than the extra energy wins back
+
+### What this changed about the lap time
+
+Almost nothing: 84.86 s against 84.87 s with constant power. The constant
+455 kW had captured the energy limit on average, so it got the time spent
+on the straights roughly right while getting their shape wrong.
+
+That corrected an assumption. I'd expected the energy limits to explain most
+of the 3.7% gap to pole. Breaking the remaining gap down by what the real
+drivers were doing at each point:
+
+| Real driver was | Share of lap | Time the model gains |
+|---|---|---|
+| At full throttle | 75% | 1.87 s |
+| On part throttle or coasting | 16% | 1.81 s |
+| Braking | 8% | 0.12 s |
+
+The part-throttle phases, mostly corner entry and mid-corner, are only 16%
+of the lap but account for half the gap. Real drivers spend time there
+balancing the car, and a point-mass model goes straight from braking to
+cornering to accelerating, with no weight transfer. Much of the full-throttle
+gap also starts in the corners, since the model exits them faster and
+carries that speed down the straight.
+
 ## Limitations
 
-- **Constant power.** The biggest gap. Real 2026 cars harvest and deploy
-  battery energy unevenly around the lap and slow down on straights when it
-  runs out
 - **Point mass.** No weight transfer, suspension, or tyre load sensitivity
 - **Fixed racing line.** The simulation drives the consensus line rather
   than finding the fastest line
@@ -135,9 +205,12 @@ quoted F1 rule of thumb of around 0.3 s per 10 kg per lap.
 
 ## Next step
 
-Energy deployment: tracking the battery's charge around the lap, with
-harvesting under braking and deployment limits, would address the largest
-remaining error and model the defining feature of the 2026 regulations.
+The corners. A model with weight transfer between the axles, or at least a
+limit on how quickly the car can move from braking to cornering to
+accelerating, would target the largest remaining error. Energy modelling
+could also go further: a strategy that varies deployment corner by corner,
+rather than by two speeds, and the 250 kW deployment limit outside the
+main acceleration zones.
 
 ## Project structure
 
@@ -148,7 +221,10 @@ tracksim/
   vehicle.py             point-mass car model
   solver.py              speed profile solver with combined grip
   calibrate.py           fits every vehicle parameter to telemetry
-analysis/run_analysis.py produces every chart and number in this write-up
+  energy.py              2026 power unit, deployment and harvesting, strategy search
+analysis/
+  run_analysis.py        Part 1
+  energy_analysis.py     Part 2 (about a minute)
 charts/                  output charts
 data/                    Silverstone 2026 qualifying telemetry
 results.json             headline numbers
@@ -159,6 +235,7 @@ results.json             headline numbers
 ```bash
 pip install -r requirements.txt
 python analysis/run_analysis.py
+python analysis/energy_analysis.py
 ```
 
 The telemetry is included, so this runs without fetching anything. To use
@@ -167,4 +244,4 @@ it (needs `fastf1`), and point the analysis at the new data.
 
 ## Tech stack
 
-Python, NumPy, SciPy, pandas, Matplotlib, FastF1 (data collection only)
+Python, NumPy, SciPy, pandas, Matplotlib, Numba, FastF1 (data collection only)

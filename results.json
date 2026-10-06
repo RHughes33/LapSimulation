@@ -103,5 +103,47 @@
       "minus_10pct_s": 3.25,
       "plus_10pct_s": -3.023
     }
+  },
+  "energy": {
+    "drag_area_refit": 1.0,
+    "drag_fit": {
+      "0.9": 18.30967108793326,
+      "0.95": 18.08957095899939,
+      "1.0": 15.645379473359375,
+      "1.05": 16.562932837081057,
+      "1.1": 16.26107175058369
+    },
+    "best_lap_s": 84.855,
+    "constant_power_lap_s": 84.873,
+    "deploy_below_kmh": 270.0,
+    "superclip_above_kmh": 305.0,
+    "harvested_braking_mj": 4.16,
+    "harvested_clipping_mj": 2.43,
+    "deployed_mj": 6.41,
+    "straight_speed_error_kmh": {
+      "constant_power": 22.0,
+      "energy_model": 17.1
+    },
+    "lap_time_options_s": {
+      "Harvest limit 6 MJ": 85.304,
+      "Harvest limit 8 MJ": 84.855,
+      "Battery runs down 1 MJ": 84.299,
+      "Battery runs down 2 MJ": 83.751,
+      "No energy limits": 77.901
+    },
+    "remaining_gap_by_phase": {
+      "full throttle": {
+        "share_of_lap_pct": 75.2,
+        "sim_time_gain_s": 1.87
+      },
+      "braking": {
+        "share_of_lap_pct": 8.4,
+        "sim_time_gain_s": 0.12
+      },
+      "part throttle / coasting": {
+        "share_of_lap_pct": 16.3,
+        "sim_time_gain_s": 1.81
+      }
+    }
   }
 }
