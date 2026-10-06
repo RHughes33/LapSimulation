@@ -10,6 +10,12 @@ Part 2 adds the 2026 power unit (battery deployment, harvesting and
 superclipping under the qualifying energy rules) and finds the fastest legal
 way to spend the energy.
 
+![Simulated lap racing the real pole lap](charts/lap_animation.gif)
+
+*The energy-optimised simulation (red) racing a ghost of the real pole lap
+(white), with speed, motor power and battery level. A full-quality version
+is in `charts/lap_animation.mp4`.*
+
 ![Simulated lap of Silverstone](charts/1_track_map.png)
 
 ## How it works
@@ -225,6 +231,7 @@ tracksim/
 analysis/
   run_analysis.py        Part 1
   energy_analysis.py     Part 2 (about a minute)
+  make_animation.py      animated lap, MP4 and GIF (about two minutes)
 charts/                  output charts
 data/                    Silverstone 2026 qualifying telemetry
 results.json             headline numbers
@@ -236,7 +243,10 @@ results.json             headline numbers
 pip install -r requirements.txt
 python analysis/run_analysis.py
 python analysis/energy_analysis.py
+python analysis/make_animation.py
 ```
+
+The animation needs `ffmpeg` installed for the MP4; the GIF works without it.
 
 The telemetry is included, so this runs without fetching anything. To use
 another session, edit `SESSIONS_TO_FETCH` in `scripts/fetch_track.py`, run
